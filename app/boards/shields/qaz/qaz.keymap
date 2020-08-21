@@ -1,19 +1,30 @@
 #include <behaviors.dtsi>
 #include <dt-bindings/zmk/keys.h>
 
+#define DEFAULT 0
+#define NUM_SYM 1
+#define NAV     2
+
+ 
 / {
     keymap {
         compatible = "zmk,keymap";
 
         default_layer {
-
             bindings = <
     &kp Q &kp W &kp F &kp P &kp G &kp J &kp L &kp U &kp Y &kp QUOT    
     &kp A &kp R &kp S &kp T &kp D &kp H &kp N &kp E &kp I &kp O 
     &kp Z &kp X &kp C &kp V &kp B &kp K &kp M &kp CMMA &kp DOT
-    &kp LGUI &kp LALT &kp LCTL &kp BKSP &kp SPC &kp RET &kp TAB &kp FSLH
+    &kp LGUI &kp LALT &kp LCTL &kp BKSP &kp SPC &kp RET &mo NUM_SYM &kp FSLH
             >;
-
+        };
+        num_sym {
+            bindings = <
+    &kp NUM_1 &kp NUM_2 &kp NUM_3 &kp NUM_4 &kp NUM_5 &kp NUM_6 &kp NUM_7 &kp NUM_8 &kp NUM_9 &kp NUM_0    
+    &kp BANG &kp ATSN &kp HASH &kp CURU &kp PRCT &kp CRRT &kp AMPS &kp KMLT &kp EQL &kp MINUS       
+    &kp DEL &kp X &kp C &kp V &kp B &kp K &kp M &kp CMMA &kp DOT
+    &reset &kp LALT &kp LCTL &kp BKSP &kp SPC &kp RET &trans &kp FSLH
+            >;
         };
     };
     
