@@ -5,6 +5,33 @@
 #define NUM_SYM 1
 #define NAV     2
 
+/ {
+	behaviors {
+		rst: behavior_tap_hold1 {
+			compatible = "zmk,behavior-tap-hold";
+			label = "Bootloader Tap - Reset Hold";
+			#binding-cells = <0>;
+			hold_ms = <200>;
+			bindings = <&bootloader>, <&reset>, <&kp BKSP>;
+        };
+
+        num_spc: behavior_tap_hold2 {
+			compatible = "zmk,behavior-tap-hold";
+			label = "Space Tap - Num/Sym Hold";
+			#binding-cells = <0>;
+			hold_ms = <200>;
+			bindings = <&kp SPC>, <&mo NUM_SYM>, <&kp BKSP>;
+        };
+
+        ent_nav: behavior_tap_hold3 {
+			compatible = "zmk,behavior-tap-hold";
+			label = "Enter Tap - Nav Hold";
+			#binding-cells = <0>;
+			hold_ms = <150>;
+			bindings = <&kp RET>, <&mo NAV>, <&kp BKSP>;
+	    	};
+    	};
+    };
  
 / {
     keymap {
@@ -15,7 +42,7 @@
     &kp Q &kp W &kp F &kp P &kp G &kp J &kp L &kp U &kp Y &kp QUOT    
     &mt MOD_LGUI A &mt MOD_LALT R &mt MOD_LCTL S &mt MOD_LSFT T &kp D &kp H &mt MOD_RSFT N &mt MOD_RCTL E &mt MOD_RALT I &mt MOD_RGUI O 
     &kp Z &kp X &kp C &kp V &kp B &kp K &kp M &kp CMMA &kp DOT
-    &kp LGUI &kp LALT &kp LCTL &kp BKSP &kp SPC &kp RET &mo NUM_SYM &kp FSLH
+    &kp LGUI &kp LALT &kp LCTL &ent_nav &num_spc &kp RET &mo NUM_SYM &kp FSLH
             >;
         };
         num_sym {
@@ -23,9 +50,17 @@
     &kp NUM_1 &kp NUM_2 &kp NUM_3 &kp NUM_4 &kp NUM_5 &kp NUM_6 &kp NUM_7 &kp NUM_8 &kp NUM_9 &kp NUM_0    
     &kp BANG &kp ATSN &kp HASH &kp CURU &kp PRCT &kp CRRT &kp AMPS &kp KMLT &kp EQL &kp MINUS       
     &kp DEL &kp X &kp C &kp V &kp B &kp K &kp M &kp CMMA &kp DOT
-    &reset &kp LALT &kp LCTL &kp BKSP &kp SPC &kp RET &trans &kp FSLH
+    &rst &kp LALT &kp LCTL &trans &trans &kp RET &trans &kp FSLH
+            >;
+        };
+
+    nav {
+            bindings = <
+    &kp NUM_1 &kp NUM_2 &kp NUM_3 &kp NUM_4 &kp NUM_5 &kp NUM_6 &kp NUM_7 &kp UARW &kp NUM_9 &kp BKSP    
+    &kp BANG &kp ATSN &kp HASH &kp CURU &kp PRCT &kp CRRT &kp LARW &kp DARW &kp RARW &kp MINUS       
+    &kp DEL &kp X &kp C &kp V &kp B &kp K &kp M &kp CMMA &kp DOT
+    &rst &kp LALT &kp LCTL &trans &trans &kp RET &trans &kp FSLH
             >;
         };
     };
-    
-};
+};  
