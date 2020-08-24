@@ -4,3 +4,6 @@
 /tools
 /zephyr
 /build
+.DS_Store
+app/._.DS_Store
+._.DS_Store
