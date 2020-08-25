@@ -20,7 +20,7 @@
 			compatible = "zmk,behavior-tap-hold";
 			label = "Space Tap - Num/Sym Hold";
 			#binding-cells = <0>;
-			hold_ms = <200>;
+			hold_ms = <175>;
 			bindings = <&kp SPC>, <&mo NUM_SYM>, <&kp BKSP>;
         };
 
@@ -28,7 +28,7 @@
 			compatible = "zmk,behavior-tap-hold";
 			label = "Return Tap - Nav Hold";
 			#binding-cells = <0>;
-			hold_ms = <200>;
+			hold_ms = <150>;
 			bindings = <&kp RET>, <&mo NAV>, <&kp BKSP>;
         };
 
@@ -88,12 +88,12 @@
 			bindings = <&kp I>, <&kp RALT>, <&kp BKSP>;
 	    	};
             
-        o_gui: behavior_tap_hold10 {
+        com_col: behavior_tap_hold10 {
 			compatible = "zmk,behavior-tap-hold";
-			label = "O tap, GUI hold";
+			label = ", tap,  hold";
 			#binding-cells = <0>;
 			hold_ms = <200>;
-			bindings = <&kp O>, <&kp RGUI>, <&kp BKSP>;
+			bindings = <&kp CMMA>, <&kp SCLN>, <&kp BKSP>;
 	    	};
     	};
     };
@@ -105,9 +105,9 @@
         default_layer {
             bindings = <
     &kp Q &kp W &kp F &kp P &kp G &kp J &kp L &kp U &kp Y &kp QUOT    
-    &a_gui &r_alt &s_ctrl &t_shift &kp D &kp H &n_shift &e_ctrl &i_alt &o_gui
-    &kp Z &kp X &kp C &kp V &kp B &kp K &kp M &kp CMMA &kp DOT
-    &kp LGUI &kp CLCK &kp TAB &ent_nav &num_spc &kp RET &mo NUM_SYM &kp FSLH
+    &kp A &kp R &kp S &kp T &kp D &kp H &kp N &kp E &kp I &kp O
+    &kp Z &kp X &kp C &kp V &kp B &kp K &kp M &com_col &kp DOT
+    &kp LSFT &kp LGUI &kp TAB &ent_nav &num_spc &kp LCTL &kp LALT &kp FSLH
             >;
         };
         num_sym {
@@ -128,4 +128,4 @@
             >;
         };
     };
-};  
+};
