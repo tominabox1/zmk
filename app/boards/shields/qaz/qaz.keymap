@@ -20,16 +20,16 @@
 			compatible = "zmk,behavior-tap-hold";
 			label = "Space Tap - Num/Sym Hold";
 			#binding-cells = <0>;
-			hold_ms = <175>;
-			bindings = <&kp SPC>, <&mo NUM_SYM>, <&kp BKSP>;
+			hold_ms = <150>;
+			bindings = <&kp SPC>, <&mo NUM_SYM>;
         };
 
         ent_nav: behavior_tap_hold{
 			compatible = "zmk,behavior-tap-hold";
 			label = "Return Tap - Nav Hold";
 			#binding-cells = <0>;
-			hold_ms = <150>;
-			bindings = <&kp RET>, <&mo NAV>, <&kp BKSP>;
+			hold_ms = <125>;
+			bindings = <&kp RET>, <&mo NAV>;
         };
 
         a_gui: behavior_tap_hold3 {
