@@ -20,7 +20,7 @@
 			compatible = "zmk,behavior-tap-hold";
 			label = "Space Tap - Num/Sym Hold";
 			#binding-cells = <0>;
-			hold_ms = <150>;
+			hold_ms = <300>;
 			bindings = <&kp SPC>, <&mo NUM_SYM>;
         };
 
@@ -28,66 +28,10 @@
 			compatible = "zmk,behavior-tap-hold";
 			label = "Return Tap - Nav Hold";
 			#binding-cells = <0>;
-			hold_ms = <125>;
+			hold_ms = <100>;
 			bindings = <&kp RET>, <&mo NAV>;
         };
 
-        a_gui: behavior_tap_hold3 {
-			compatible = "zmk,behavior-tap-hold";
-			label = "A tap, GUI hold";
-			#binding-cells = <0>;
-			hold_ms = <200>;
-			bindings = <&kp A>, <&kp LGUI>, <&kp BKSP>;
-	    	};
-
-        r_alt: behavior_tap_hold4 {
-			compatible = "zmk,behavior-tap-hold";
-			label = "R tap, Alt Hold";
-			#binding-cells = <0>;
-			hold_ms = <150>;
-			bindings = <&kp R>, <&kp LALT>, <&kp BKSP>;
-	    	};
-
-        s_ctrl: behavior_tap_hold5 {
-			compatible = "zmk,behavior-tap-hold";
-			label = "S tap, Ctrl Hold";
-			#binding-cells = <0>;
-			hold_ms = <150>;
-			bindings = <&kp S>, <&kp LCTL>, <&kp BKSP>;
-	    	};
-
-        t_shift: behavior_tap_hold6 {
-			compatible = "zmk,behavior-tap-hold";
-			label = "T tap, Shift hold";
-			#binding-cells = <0>;
-			hold_ms = <150>;
-			bindings = <&kp T>, <&kp LSFT>, <&kp BKSP>;
-	    	};
-
-        n_shift: behavior_tap_hold7 {
-			compatible = "zmk,behavior-tap-hold";
-			label = "N tap, Shift hold";
-			#binding-cells = <0>;
-			hold_ms = <150>;
-			bindings = <&kp N>, <&kp RSFT>, <&kp BKSP>;
-	    	};
-
-        e_ctrl: behavior_tap_hold8 {
-			compatible = "zmk,behavior-tap-hold";
-			label = "E tap, Ctrl hold";
-			#binding-cells = <0>;
-			hold_ms = <150>;
-			bindings = <&kp E>, <&kp RCTL>, <&kp BKSP>;
-	    	};
-
-        i_alt: behavior_tap_hold9 {
-			compatible = "zmk,behavior-tap-hold";
-			label = "I tap, ALT hold";
-			#binding-cells = <0>;
-			hold_ms = <150>;
-			bindings = <&kp I>, <&kp RALT>, <&kp BKSP>;
-	    	};
-            
         com_col: behavior_tap_hold10 {
 			compatible = "zmk,behavior-tap-hold";
 			label = ", tap,  hold";
