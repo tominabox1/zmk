@@ -89,7 +89,7 @@
 			compatible = "zmk,behavior-tap-hold";
 			label = "O GUI";
 			#binding-cells = <0>;
-			tapping_term_ms = <200>;
+			tapping_term_ms = <300>;
 			bindings = <&kp O &kp RGUI &kp 0>;
             flavor = "tap-preferred";
 	    	};
@@ -140,14 +140,14 @@
     &kp NUM_1 &kp NUM_2 &kp NUM_3 &kp NUM_4 &kp NUM_5 &kp NUM_6 &kp NUM_7 &kp NUM_8 &kp NUM_9 &kp NUM_0    
     &trans &trans &trans &trans &trans &trans &trans &trans &kp EQL &kp MINUS       
     &kp DEL &none &none &none &none &none &none &none &kp DOT
-    &rst &none &none &trans &trans &kp RET &trans &kp FSLH
+    &rst &none &none &trans &trans &kp M_PREV &kp M_PLAY &kp M_NEXT
             >;
         };
 
     nav {
             bindings = <
-    &none &none &none &none &none &none &none &kp UARW &none &kp BKSP    
-    &trans &trans &trans &trans &none &none &kp LARW &kp DARW &kp RARW &none       
+    &kp ESC &none &none &none &none &none &none &kp UARW &none &kp BKSP    
+    &kp GRAV &trans &trans &trans &none &none &kp LARW &kp DARW &kp RARW &none       
     &none &none &none &none &none &none &none &none &none
     &rst &none &none &trans &trans &trans &trans &kp RET &trans &kp FSLH
             >;
