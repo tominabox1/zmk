@@ -37,7 +37,25 @@
 			compatible = "zmk,behavior-hold-tap";
 			label = "homerow mods";
 			#binding-cells = <2>;
-			tapping_term_ms = <225>;
+			tapping_term_ms = <200>;
+            flavor = "tap-preferred";
+			bindings = <&kp>, <&kp>;
+        };
+        
+        hm1: homerow_mods1 {
+			compatible = "zmk,behavior-hold-tap";
+			label = "homerow mods";
+			#binding-cells = <2>;
+			tapping_term_ms = <175>;
+            flavor = "balanced";
+			bindings = <&kp>, <&kp>;
+        };
+
+        hm2: homerow_mods2 {
+			compatible = "zmk,behavior-hold-tap";
+			label = "homerow mods 2";
+			#binding-cells = <2>;
+			tapping_term_ms = <230>;
             flavor = "tap-preferred";
 			bindings = <&kp>, <&kp>;
         };
@@ -46,8 +64,8 @@
 		 	compatible = "zmk,behavior-hold-tap";
 	     	label = "Tap comma_hold colon";
 			#binding-cells = <2>;
-			tapping_term_ms = <200>;
-            flavor = "tap-preferred";
+			tapping_term_ms = <150>;
+            flavor = "balanced";
 		 	bindings = <&kp>, <&kp>;
 	     	};
     	 };
@@ -60,7 +78,7 @@
         default_layer {
             bindings = <
     &kp Q &kp W &kp F &kp P &kp G &kp J &kp L &kp U &kp Y &kp QUOT    
-    &hm LGUI A &hm LALT R &hm LCTL S &hm LSFT T &hm CLCK D &kp H &hm RSFT N &hm RCTL E &hm RALT I &hm LGUI O
+    &hm2 LGUI A &hm LALT R &hm LCTL S &hm1 LSFT T &hm CLCK D &kp H &hm1 RSFT N &hm RCTL E &hm RALT I &hm2 LGUI O
     &kp Z &kp X &kp C &kp V &kp B &kp K &kp M &com_col SCLN CMMA &kp DOT
     &kp ESC &kp LGUI &kp TAB &bh 2 RET &bh 1 SPC &kp LCTL &kp LALT &kp FSLH
             >;
@@ -78,8 +96,8 @@
     nav {
             bindings = <
     &bt BT_NXT &none &none &none &none &none &none &kp UARW &none &kp BKSP    
-    &trans &trans &trans &trans &none &none &kp LARW &kp DARW &kp RARW &none       
-    &rgb_ug RGB_TOG &rgb_ug RGB_EFF &none &none &none &none &none &none &none
+    &trans &trans &trans &trans &none &kp HOME &kp LARW &kp DARW &kp RARW &kp END       
+    &rgb_ug RGB_TOG &rgb_ug RGB_EFF &none &none &none &none &none &none &kp BSLH
     &bt BT_CLR &none &none &none &none &kp F7 &kp F8 &kp F9
             >;
         };
