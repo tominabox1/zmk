@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: MIT
  */
 
+#include <stdio.h>
 #define DT_DRV_COMPAT zmk_kscan_gpio_matrix
 
 #include <device.h>
@@ -73,7 +74,7 @@ static int kscan_gpio_config_interrupts(struct device **devices,
     };                                                                                             \
     struct kscan_gpio_data_##n {                                                                   \
         kscan_callback_t callback;                                                                 \
-        COND_CODE_0(CONFIG_ZMK_KSCAN_MATRIX_POLLING, (), (struct k_timer poll_timer;))             \
+        COND_CODE_1(CONFIG_ZMK_KSCAN_MATRIX_POLLING, (struct k_timer poll_timer;), ())             \
         struct COND_CODE_0(DT_INST_PROP(n, debounce_period), (k_work), (k_delayed_work)) work;     \
         bool matrix_state[INST_MATRIX_ROWS(n)][INST_MATRIX_COLS(n)];                               \
         struct device *rows[INST_MATRIX_ROWS(n)];                                                  \
@@ -101,18 +102,21 @@ static int kscan_gpio_config_interrupts(struct device **devices,
         return (                                                                                   \
             COND_CODE_0(DT_ENUM_IDX(DT_DRV_INST(n), diode_direction), (cfg->rows), (cfg->cols)));  \
     }                                                                                              \
-    COND_CODE_0(CONFIG_ZMK_KSCAN_MATRIX_POLLING,                                                   \
+    COND_CODE_1(CONFIG_ZMK_KSCAN_MATRIX_POLLING, (),                                               \
                 (                                                                                  \
                     static int kscan_gpio_enable_interrupts_##n(struct device *dev) {              \
-                        return kscan_gpio_config_interrupts(                                       \
-                            kscan_gpio_input_devices_##n(dev), kscan_gpio_input_configs_##n(dev),  \
-                            INST_INPUT_LEN(n), GPIO_INT_LEVEL_ACTIVE);                             \
+                        /* We need to avoid SENSE when logging is enabled, it crashes Zephyr */    \
+                        gpio_flags_t flags =                                                       \
+                            COND_CODE_1(CONFIG_USB_UART_CONSOLE, (GPIO_INT_EDGE_TO_ACTIVE),        \
+                                        (GPIO_INT_LEVEL_ACTIVE));                                  \
+                        return kscan_gpio_config_interrupts(kscan_gpio_input_devices_##n(dev),     \
+                                                            kscan_gpio_input_configs_##n(dev),     \
+                                                            INST_INPUT_LEN(n), flags);             \
                     } static int kscan_gpio_disable_interrupts_##n(struct device *dev) {           \
                         return kscan_gpio_config_interrupts(kscan_gpio_input_devices_##n(dev),     \
                                                             kscan_gpio_input_configs_##n(dev),     \
                                                             INST_INPUT_LEN(n), GPIO_INT_DISABLE);  \
-                    }),                                                                            \
-                ())                                                                                \
+                    }))                                                                            \
     static void kscan_gpio_set_output_state_##n(struct device *dev, int value) {                   \
         int err;                                                                                   \
         for (int i = 0; i < INST_OUTPUT_LEN(n); i++) {                                             \
@@ -181,17 +185,20 @@ static int kscan_gpio_config_interrupts(struct device **devices,
         struct kscan_gpio_data_##n *data = CONTAINER_OF(work, struct kscan_gpio_data_##n, work);   \
         kscan_gpio_read_##n(data->dev);                                                            \
     }                                                                                              \
-    static void kscan_gpio_irq_callback_handler_##n(struct device *dev, struct gpio_callback *cb,  \
-                                                    gpio_port_pins_t pin) {                        \
-        struct kscan_gpio_irq_callback_##n *data =                                                 \
-            CONTAINER_OF(cb, struct kscan_gpio_irq_callback_##n, callback);                        \
-        kscan_gpio_disable_interrupts_##n(data->dev);                                              \
-        COND_CODE_0(DT_INST_PROP(n, debounce_period), ({ k_work_submit(data->work); }), ({         \
-                        k_delayed_work_cancel(data->work);                                         \
-                        k_delayed_work_submit(data->work,                                          \
-                                              K_MSEC(DT_INST_PROP(n, debounce_period)));           \
-                    }))                                                                            \
-    }                                                                                              \
+    COND_CODE_1(CONFIG_ZMK_KSCAN_MATRIX_POLLING, (),                                               \
+                (static void kscan_gpio_irq_callback_handler_##n(                                  \
+                    struct device *dev, struct gpio_callback *cb, gpio_port_pins_t pin) {          \
+                    struct kscan_gpio_irq_callback_##n *data =                                     \
+                        CONTAINER_OF(cb, struct kscan_gpio_irq_callback_##n, callback);            \
+                    kscan_gpio_disable_interrupts_##n(data->dev);                                  \
+                    COND_CODE_0(DT_INST_PROP(n, debounce_period),                                  \
+                                ({ k_work_submit(data->work); }), ({                               \
+                                    k_delayed_work_cancel(data->work);                             \
+                                    k_delayed_work_submit(                                         \
+                                        data->work, K_MSEC(DT_INST_PROP(n, debounce_period)));     \
+                                }))                                                                \
+                }))                                                                                \
+                                                                                                   \
     static struct kscan_gpio_data_##n kscan_gpio_data_##n = {                                      \
         .rows = {[INST_MATRIX_ROWS(n) - 1] = NULL}, .cols = {[INST_MATRIX_COLS(n) - 1] = NULL}};   \
     static int kscan_gpio_configure_##n(struct device *dev, kscan_callback_t callback) {           \
@@ -204,24 +211,25 @@ static int kscan_gpio_config_interrupts(struct device **devices,
         return 0;                                                                                  \
     };                                                                                             \
     static int kscan_gpio_enable_##n(struct device *dev) {                                         \
-        COND_CODE_0(CONFIG_ZMK_KSCAN_MATRIX_POLLING,                                               \
-                    (int err = kscan_gpio_enable_interrupts_##n(dev);                              \
-                     if (err) { return err; } return kscan_gpio_read_##n(dev);),                   \
+        COND_CODE_1(CONFIG_ZMK_KSCAN_MATRIX_POLLING,                                               \
                     (struct kscan_gpio_data_##n *data = dev->driver_data;                          \
-                     k_timer_start(&data->poll_timer, K_MSEC(10), K_MSEC(10)); return 0;))         \
+                     k_timer_start(&data->poll_timer, K_MSEC(10), K_MSEC(10)); return 0;),         \
+                    (int err = kscan_gpio_enable_interrupts_##n(dev);                              \
+                     if (err) { return err; } return kscan_gpio_read_##n(dev);))                   \
     };                                                                                             \
     static int kscan_gpio_disable_##n(struct device *dev) {                                        \
-        COND_CODE_0(CONFIG_ZMK_KSCAN_MATRIX_POLLING,                                               \
-                    (return kscan_gpio_disable_interrupts_##n(dev);),                              \
+        COND_CODE_1(CONFIG_ZMK_KSCAN_MATRIX_POLLING,                                               \
                     (struct kscan_gpio_data_##n *data = dev->driver_data;                          \
-                     k_timer_stop(&data->poll_timer); return 0;))                                  \
+                     k_timer_stop(&data->poll_timer); return 0;),                                  \
+                    (return kscan_gpio_disable_interrupts_##n(dev);))                              \
     };                                                                                             \
-    COND_CODE_0(CONFIG_ZMK_KSCAN_MATRIX_POLLING, (),                                               \
+    COND_CODE_1(CONFIG_ZMK_KSCAN_MATRIX_POLLING,                                                   \
                 (static void kscan_gpio_timer_handler(struct k_timer *timer) {                     \
                     struct kscan_gpio_data_##n *data =                                             \
                         CONTAINER_OF(timer, struct kscan_gpio_data_##n, poll_timer);               \
                     k_work_submit(&data->work.work);                                               \
-                }))                                                                                \
+                }),                                                                                \
+                ())                                                                                \
     static int kscan_gpio_init_##n(struct device *dev) {                                           \
         struct kscan_gpio_data_##n *data = dev->driver_data;                                       \
         int err;                                                                                   \
@@ -267,8 +275,8 @@ static int kscan_gpio_config_interrupts(struct device **devices,
             }                                                                                      \
         }                                                                                          \
         data->dev = dev;                                                                           \
-        COND_CODE_0(CONFIG_ZMK_KSCAN_MATRIX_POLLING, (),                                           \
-                    (k_timer_init(&data->poll_timer, kscan_gpio_timer_handler, NULL);))            \
+        COND_CODE_1(CONFIG_ZMK_KSCAN_MATRIX_POLLING,                                               \
+                    (k_timer_init(&data->poll_timer, kscan_gpio_timer_handler, NULL);), ())        \
         (COND_CODE_0(DT_INST_PROP(n, debounce_period), (k_work_init), (k_delayed_work_init)))(     \
             &data->work, kscan_gpio_work_handler_##n);                                             \
         return 0;                                                                                  \
