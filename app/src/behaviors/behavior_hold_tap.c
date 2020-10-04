@@ -18,6 +18,7 @@
 #include <zmk/events/keycode-state-changed.h>
 #include <zmk/events/modifiers-state-changed.h>
 #include <zmk/hid.h>
+#include <zmk/hid_usage.h>
 
 LOG_MODULE_DECLARE(zmk, CONFIG_ZMK_LOG_LEVEL);
 
@@ -398,7 +399,7 @@ static int position_state_changed_listener(const struct zmk_event_header *eh) {
 }
 
 static bool is_mod(struct keycode_state_changed *ev) {
-    return ev->usage_page == USAGE_KEYPAD && ev->keycode >= LCTL && ev->keycode <= RGUI;
+    return ev->usage_page == HID_USAGE_KEY && ev->keycode >= LCTL && ev->keycode <= RGUI;
 }
 
 static int keycode_state_changed_listener(const struct zmk_event_header *eh) {

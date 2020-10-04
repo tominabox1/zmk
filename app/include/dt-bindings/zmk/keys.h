@@ -6,8 +6,7 @@
 
 #pragma once
 
-#define USAGE_KEYPAD 0x07
-#define USAGE_CONSUMER 0x0C
+#include <zmk/hid_usage_legacy.h>
 
 #define A 0x04
 #define B 0x05
