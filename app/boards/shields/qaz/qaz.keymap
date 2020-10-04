@@ -28,7 +28,7 @@
 			compatible = "zmk,behavior-hold-tap";
 			label = "Layer-Tap";
 			#binding-cells = <2>;
-			tapping_term_ms = <220>;
+			tapping_term_ms = <205>;
             flavor = "tap-preferred";
 			bindings = <&mo>, <&kp>;
         };
@@ -95,9 +95,9 @@
 
     nav {
             bindings = <
-    &bt BT_NXT &none &none &none &none &none &none &kp UARW &none &kp BKSP    
+    &bt BT_SEL_CMD 0 &bt BT_SEL_CMD 1 &bt BT_SEL_CMD 2 &none &none &none &kp PGUP &kp UARW &none &kp BKSP    
     &trans &trans &trans &trans &none &kp HOME &kp LARW &kp DARW &kp RARW &kp END       
-    &rgb_ug RGB_TOG &rgb_ug RGB_EFF &none &none &none &none &none &none &kp BSLH
+    &rgb_ug RGB_TOG &rgb_ug RGB_EFF &none &none &none &kp PGDN &none &none &kp BSLH
     &bt BT_CLR &none &none &none &none &kp F7 &kp F8 &kp F9
             >;
         };
