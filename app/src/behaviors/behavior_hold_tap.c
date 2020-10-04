@@ -18,6 +18,7 @@
 #include <zmk/events/keycode-state-changed.h>
 #include <zmk/events/modifiers-state-changed.h>
 #include <zmk/hid.h>
+#include <zmk/hid_usage.h>
 
 LOG_MODULE_DECLARE(zmk, CONFIG_ZMK_LOG_LEVEL);
 

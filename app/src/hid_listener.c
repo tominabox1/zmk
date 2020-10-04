@@ -13,6 +13,7 @@ LOG_MODULE_DECLARE(zmk, CONFIG_ZMK_LOG_LEVEL);
 #include <zmk/events/keycode-state-changed.h>
 #include <zmk/events/modifiers-state-changed.h>
 #include <zmk/hid.h>
+#include <zmk/hid_usage.h>
 #include <zmk/endpoints.h>
 
 static int hid_listener_keycode_pressed(u8_t usage_page, u32_t keycode) {
@@ -67,14 +68,14 @@ static int hid_listener_modifiers_pressed(zmk_mod_flags modifiers) {
     LOG_DBG("modifiers %d", modifiers);
 
     zmk_hid_register_mods(modifiers);
-    return zmk_endpoints_send_report(USAGE_KEYPAD);
+    return zmk_endpoints_send_report(HID_USAGE_KEY);
 }
 
 static int hid_listener_modifiers_released(zmk_mod_flags modifiers) {
     LOG_DBG("modifiers %d", modifiers);
 
     zmk_hid_unregister_mods(modifiers);
-    return zmk_endpoints_send_report(USAGE_KEYPAD);
+    return zmk_endpoints_send_report(HID_USAGE_KEY);
 }
 
 int hid_listener(const struct zmk_event_header *eh) {

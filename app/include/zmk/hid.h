@@ -6,6 +6,7 @@
 
 #pragma once
 
+#include <sys/util.h>
 #include <usb/usb_device.h>
 #include <usb/class/usb_hid.h>
 
@@ -15,7 +16,7 @@
 
 #define COLLECTION_REPORT 0x03
 
-#define ZMK_HID_MAX_KEYCODE GUI
+#define ZMK_HID_MAX_KEYCODE 0xFE
 
 #define MOD_MASK (0xFF << 0x10)
 #define SELECT_MODS(keycode) (keycode >> 0x10)
@@ -89,7 +90,7 @@ static const u8_t zmk_hid_report_desc[] = {
     USAGE_GEN_DESKTOP_KEYPAD,
     /* REPORT_SIZE (8) */
     HID_GI_REPORT_SIZE,
-    0x02,
+    0x01,
     /* REPORT_COUNT (6) */
     HID_GI_REPORT_COUNT,
     0x01,
@@ -116,18 +117,20 @@ static const u8_t zmk_hid_report_desc[] = {
     /* LOGICAL_MINIMUM (0) */
     HID_GI_LOGICAL_MIN(1),
     0x00,
-    /* LOGICAL_MAXIMUM (1) */
-    HID_GI_LOGICAL_MAX(1),
+    /* LOGICAL_MAXIMUM (0xFFFF) */
+    HID_GI_LOGICAL_MAX(2),
+    0xFF,
     0xFF,
     HID_LI_USAGE_MIN(1),
     0x00,
-    /* USAGE_MAXIMUM (Keyboard Application) */
-    HID_LI_USAGE_MAX(1),
+    /* USAGE_MAXIMUM (0xFFFF) */
+    HID_LI_USAGE_MAX(2),
+    0xFF,
     0xFF,
     /* INPUT (Data,Ary,Abs) */
-    /* REPORT_SIZE (8) */
+    /* REPORT_SIZE (16) */
     HID_GI_REPORT_SIZE,
-    0x08,
+    0x10,
     /* REPORT_COUNT (8) */
     HID_GI_REPORT_COUNT,
     0x06,
@@ -146,7 +149,7 @@ static const u8_t zmk_hid_report_desc[] = {
 
 struct zmk_hid_keypad_report_body {
     zmk_mod_flags modifiers;
-    u8_t keys[13];
+    u8_t keys[ROUND_UP(ZMK_HID_MAX_KEYCODE + 1, 8) / 8];
 } __packed;
 
 struct zmk_hid_keypad_report {
@@ -155,7 +158,7 @@ struct zmk_hid_keypad_report {
 } __packed;
 
 struct zmk_hid_consumer_report_body {
-    u8_t keys[6];
+    u16_t keys[6];
 } __packed;
 
 struct zmk_hid_consumer_report {

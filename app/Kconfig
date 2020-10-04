@@ -30,6 +30,9 @@ config ZMK_USB_INIT_PRIORITY
 config USB_NUMOF_EP_WRITE_RETRIES
 	default 10
 
+config HID_INTERRUPT_EP_MPS
+	default 64
+
 endif
 
 menuconfig ZMK_BLE

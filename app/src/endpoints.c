@@ -6,6 +6,7 @@
 
 #include <zmk/endpoints.h>
 #include <zmk/hid.h>
+#include <zmk/hid_usage.h>
 #include <zmk/usb_hid.h>
 #include <zmk/hog.h>
 
@@ -18,7 +19,7 @@ int zmk_endpoints_send_report(u8_t usage_page) {
     struct zmk_hid_consumer_report *consumer_report;
     LOG_DBG("usage page 0x%02X", usage_page);
     switch (usage_page) {
-    case USAGE_KEYPAD:
+    case HID_USAGE_KEY:
         keypad_report = zmk_hid_get_keypad_report();
 #ifdef CONFIG_ZMK_USB
         if (zmk_usb_hid_send_report((u8_t *)keypad_report, sizeof(struct zmk_hid_keypad_report)) !=
@@ -35,7 +36,7 @@ int zmk_endpoints_send_report(u8_t usage_page) {
 #endif /* CONFIG_ZMK_BLE */
 
         break;
-    case USAGE_CONSUMER:
+    case HID_USAGE_CONSUMER:
         consumer_report = zmk_hid_get_consumer_report();
 #ifdef CONFIG_ZMK_USB
         if (zmk_usb_hid_send_report((u8_t *)consumer_report,
