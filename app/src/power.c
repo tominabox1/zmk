@@ -12,7 +12,7 @@
 
 LOG_MODULE_DECLARE(zmk, CONFIG_ZMK_LOG_LEVEL);
 
-#include <zmk/usb_hid.h>
+#include <zmk/usb.h>
 #include <zmk/event-manager.h>
 #include <zmk/events/position-state-changed.h>
 #include <zmk/events/sensor-event.h>
@@ -22,6 +22,7 @@ static u32_t power_last_uptime;
 #define MAX_IDLE_MS CONFIG_ZMK_IDLE_SLEEP_TIMEOUT
 
 bool is_usb_power_present() {
+#ifdef CONFIG_USB
     enum usb_dc_status_code usb_status = zmk_usb_hid_get_status();
     switch (usb_status) {
     case USB_DC_DISCONNECTED:
@@ -30,6 +31,9 @@ bool is_usb_power_present() {
     default:
         return true;
     }
+#else
+    return false;
+#endif /* CONFIG_USB */
 }
 
 enum power_states sys_pm_policy_next_state(s32_t ticks) {

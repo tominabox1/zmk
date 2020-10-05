@@ -21,17 +21,18 @@ menuconfig ZMK_USB
 	select USB_DEVICE_STACK
 	select USB_DEVICE_HID
 
-if ZMK_USB
+if USB
 
 config ZMK_USB_INIT_PRIORITY
 	int "Init Priority"
 	default 50
 
+endif
+
+if ZMK_USB
+
 config USB_NUMOF_EP_WRITE_RETRIES
 	default 10
-
-config HID_INTERRUPT_EP_MPS
-	default 64
 
 endif
 
@@ -77,6 +78,7 @@ endmenu
 
 menuconfig ZMK_SLEEP
 	bool "Enable deep sleep support"
+	imply USB
 
 if ZMK_SLEEP
 
