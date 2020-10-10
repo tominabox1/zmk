@@ -177,7 +177,8 @@ static int kscan_gpio_config_interrupts(struct device **devices,
                             k_delayed_work_submit(&data->work, K_MSEC(5));                         \
                         }))                                                                        \
         } else {                                                                                   \
-            kscan_gpio_enable_interrupts_##n(dev);                                                 \
+            COND_CODE_1(CONFIG_ZMK_KSCAN_MATRIX_POLLING, (),                                       \
+                        (kscan_gpio_enable_interrupts_##n(dev);))                                  \
         }                                                                                          \
         return 0;                                                                                  \
     }                                                                                              \
