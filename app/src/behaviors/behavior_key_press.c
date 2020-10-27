@@ -10,7 +10,6 @@
 #include <drivers/behavior.h>
 #include <logging/log.h>
 
-#include <zmk/hid.h>
 #include <zmk/event-manager.h>
 #include <zmk/events/keycode-state-changed.h>
 #include <zmk/behavior.h>
@@ -19,7 +18,6 @@ LOG_MODULE_DECLARE(zmk, CONFIG_ZMK_LOG_LEVEL);
 
 struct behavior_key_press_config {
     u8_t usage_page;
-    u32_t modifiers;
 };
 struct behavior_key_press_data {};
 
@@ -32,10 +30,7 @@ static int on_keymap_binding_pressed(struct zmk_behavior_binding *binding,
     LOG_DBG("position %d usage_page 0x%02X keycode 0x%02X", event.position, cfg->usage_page,
             binding->param1);
 
-    // modifiers can be specified in two ways; either in the modifiers config,
-    // or by bitwise-or-ing (|) them with a keycode.
-    return ZMK_EVENT_RAISE(
-        create_keycode_state_changed(cfg->usage_page, binding->param1 | cfg->modifiers, true));
+    return ZMK_EVENT_RAISE(create_keycode_state_changed(cfg->usage_page, binding->param1, true));
 }
 
 static int on_keymap_binding_released(struct zmk_behavior_binding *binding,
@@ -45,8 +40,7 @@ static int on_keymap_binding_released(struct zmk_behavior_binding *binding,
     LOG_DBG("position %d usage_page 0x%02X keycode 0x%02X", event.position, cfg->usage_page,
             binding->param1);
 
-    return ZMK_EVENT_RAISE(
-        create_keycode_state_changed(cfg->usage_page, binding->param1 | cfg->modifiers, false));
+    return ZMK_EVENT_RAISE(create_keycode_state_changed(cfg->usage_page, binding->param1, false));
 }
 
 static const struct behavior_driver_api behavior_key_press_driver_api = {
@@ -54,9 +48,7 @@ static const struct behavior_driver_api behavior_key_press_driver_api = {
 
 #define KP_INST(n)                                                                                 \
     static const struct behavior_key_press_config behavior_key_press_config_##n = {                \
-        .usage_page = DT_INST_PROP(n, usage_page),                                                 \
-        .modifiers = DT_INST_PROP(n, modifiers),                                                   \
-    };                                                                                             \
+        .usage_page = DT_INST_PROP(n, usage_page)};                                                \
     static struct behavior_key_press_data behavior_key_press_data_##n;                             \
     DEVICE_AND_API_INIT(behavior_key_press_##n, DT_INST_LABEL(n), behavior_key_press_init,         \
                         &behavior_key_press_data_##n, &behavior_key_press_config_##n, APPLICATION, \

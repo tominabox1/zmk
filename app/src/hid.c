@@ -8,6 +8,7 @@
 LOG_MODULE_DECLARE(zmk, CONFIG_ZMK_LOG_LEVEL);
 
 #include <zmk/hid.h>
+#include <dt-bindings/zmk/keys.h>
 
 static struct zmk_hid_keypad_report kp_report = {
     .report_id = 1, .body = {.modifiers = 0, .keys = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}}};
@@ -107,6 +108,10 @@ int zmk_hid_keypad_press(zmk_key code) {
         return 0;
     }
 
+    if (code >= LCTL && code <= RGUI) {
+        return zmk_hid_register_mod(code - LCTL);
+    }
+
     if (code > ZMK_HID_MAX_KEYCODE) {
         return -EINVAL;
     }
@@ -119,15 +124,13 @@ int zmk_hid_keypad_press(zmk_key code) {
 };
 
 int zmk_hid_keypad_release(zmk_key code) {
-    zmk_mod_flags mods = SELECT_MODS(code);
-    if (mods) {
-        zmk_hid_unregister_mods(mods);
-    }
-    code = STRIP_MODS(code);
-
     if (code == 0) {
         // only modifiers
         return 0;
+    }
+
+    if (code >= LCTL && code <= RGUI) {
+        return zmk_hid_unregister_mod(code - LCTL);
     }
 
     if (code > ZMK_HID_MAX_KEYCODE) {

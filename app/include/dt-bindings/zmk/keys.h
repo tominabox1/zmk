@@ -3,7 +3,6 @@
  *
  * SPDX-License-Identifier: MIT
  */
-
 #pragma once
 
 #define USAGE_KEYPAD 0x07
@@ -121,15 +120,14 @@
 #define ATSN 0xCE
 #define BANG 0xCF
 
-/* not using these in favor of the flags defined below */
-// #define LCTL 0xE0
-// #define LSFT 0xE1
-// #define LALT 0xE2
-// #define LGUI 0xE3
-// #define RCTL 0xE4
-// #define RSFT 0xE5
-// #define RALT 0xE6
-// #define RGUI 0xE7
+#define LCTL 0xE0
+#define LSFT 0xE1
+#define LALT 0xE2
+#define LGUI 0xE3
+#define RCTL 0xE4
+#define RSFT 0xE5
+#define RALT 0xE6
+#define RGUI 0xE7
 
 #define VOLU 0x80
 #define VOLD 0x81
@@ -145,11 +143,25 @@
 #define M_VOLU 0xE9
 #define M_VOLD 0xEA
 
-#define LCTL (0x01 << 0x10)
-#define LSFT (0x02 << 0x10)
-#define LALT (0x04 << 0x10)
-#define LGUI (0x08 << 0x10)
-#define RCTL (0x10 << 0x10)
-#define RSFT (0x20 << 0x10)
-#define RALT (0x40 << 0x10)
-#define RGUI (0x80 << 0x10)
+#define MOD_LCTL 0x01
+#define MOD_LSFT 0x02
+#define MOD_LALT 0x04
+#define MOD_LGUI 0x08
+#define MOD_RCTL 0x10
+#define MOD_RSFT 0x20
+#define MOD_RALT 0x40
+#define MOD_RGUI 0x80
+
+#define SELECT_MODS(keycode) (keycode >> 24)
+#define STRIP_MODS(keycode) (keycode & ~(0xFF << 24))
+
+#define APPLY_MODS(mods, keycode) (mods << 24 | keycode)
+#define LC(keycode) APPLY_MODS(MOD_LCTL, keycode)
+#define LS(keycode) APPLY_MODS(MOD_LSFT, keycode)
+#define LA(keycode) APPLY_MODS(MOD_LALT, keycode)
+#define LG(keycode) APPLY_MODS(MOD_LGUI, keycode)
+//RC interferes with row-column macro from marrix-transform.h
+#define RC(keycode) APPLY_MODS(MOD_RCTL, keycode)
+#define RS(keycode) APPLY_MODS(MOD_RSFT, keycode)
+#define RA(keycode) APPLY_MODS(MOD_RALT, keycode)
+#define RG(keycode) APPLY_MODS(MOD_RGUI, keycode)
