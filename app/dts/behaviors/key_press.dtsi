@@ -1,5 +1,5 @@
 
-#include <zmk/hid_usage.h>
+#include <zmk/hid_usage_pages.h>
 
 / {
 	behaviors {
