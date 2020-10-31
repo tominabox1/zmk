@@ -8,6 +8,7 @@
 #include <dt-bindings/zmk/keys.h>
 #include <dt-bindings/zmk/bt.h>
 #include <dt-bindings/zmk/rgb.h>
+#include <dt-bindings/zmk/ext_power.h>
 
 #define DEFAULT 0
 #define NUM_SYM 1
@@ -86,8 +87,8 @@
 
         num_sym {
             bindings = <
-    &kp NUM_1 &kp NUM_2 &kp NUM_3 &kp NUM_4 &kp NUM_5 &kp NUM_6 &kp NUM_7 &kp NUM_8 &kp NUM_9 &kp NUM_0    
-    &kp LS(NUM_1) &kp LS(NUM_2) &kp LS(NUM_3) &kp LS(NUM_4) &kp LS(NUM_5) &kp LS(NUM_6) &kp LS(NUM_7) &kp LS(NUM_8) &kp EQL &kp MINUS       
+    &kp N1 &kp N2 &kp N3 &kp N4 &kp N5 &kp N6 &kp N7 &kp N8 &kp N9 &kp N0    
+    &kp LS(N1) &kp LS(N2) &kp LS(N3) &kp LS(N4) &kp LS(N5) &kp LS(N6) &kp LS(N7) &kp LS(N8) &kp EQL &kp MINUS       
     &kp DEL &none &none &none &kp LS(MINUS) &none &none &none &kp DOT
     &rst &none &none &trans &trans &kp RET &trans &kp FSLH
             >;
@@ -96,7 +97,7 @@
     nav {
             bindings = <
     &bt BT_SEL_CMD 0 &bt BT_SEL_CMD 1 &bt BT_SEL_CMD 2 &none &none &none &kp PGUP &kp UARW &none &kp BKSP    
-    &trans &trans &trans &trans &none &kp HOME &kp LARW &kp DARW &kp RARW &kp END       
+    &ext_power EP_TOG &trans &trans &trans &none &kp HOME &kp LARW &kp DARW &kp RARW &kp END       
     &rgb_ug RGB_TOG &rgb_ug RGB_EFF &none &none &none &kp PGDN &none &none &kp BSLH
     &bt BT_CLR &none &none &none &none &kp F7 &kp F8 &kp F9
             >;
