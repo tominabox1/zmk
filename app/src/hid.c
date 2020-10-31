@@ -97,19 +97,8 @@ int zmk_hid_unregister_mods(zmk_mod_flags modifiers) {
     }
 
 int zmk_hid_keypad_press(zmk_key code) {
-    zmk_mod_flags mods = SELECT_MODS(code);
-    if (mods) {
-        zmk_hid_register_mods(mods);
-    }
-    code = STRIP_MODS(code);
-
-    if (code == 0) {
-        // only modifiers
-        return 0;
-    }
-
-    if (code >= LCTL && code <= RGUI) {
-        return zmk_hid_register_mod(code - LCTL);
+    if (code >= LEFT_CONTROL && code <= RIGHT_GUI) {
+        return zmk_hid_register_mod(code - LEFT_CONTROL);
     }
 
     if (code > ZMK_HID_MAX_KEYCODE) {
@@ -124,13 +113,8 @@ int zmk_hid_keypad_press(zmk_key code) {
 };
 
 int zmk_hid_keypad_release(zmk_key code) {
-    if (code == 0) {
-        // only modifiers
-        return 0;
-    }
-
-    if (code >= LCTL && code <= RGUI) {
-        return zmk_hid_unregister_mod(code - LCTL);
+    if (code >= LEFT_CONTROL && code <= RIGHT_GUI) {
+        return zmk_hid_unregister_mod(code - LEFT_CONTROL);
     }
 
     if (code > ZMK_HID_MAX_KEYCODE) {
