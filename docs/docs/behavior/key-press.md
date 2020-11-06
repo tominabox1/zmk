@@ -20,7 +20,7 @@ provided by ZMK near the top:
 #include <dt-bindings/zmk/keys.h>
 ```
 
-Doing so makes a set of defines such as `A`, `NUM_1`, etc. available for use with these behaviors
+Doing so makes a set of defines such as `A`, `N1`, etc. available for use with these behaviors
 
 :::note
 There is an [open issue](https://github.com/zmkfirmware/zmk/issues/21) to provide a more comprehensive, and
@@ -45,23 +45,4 @@ Example:
 
 ```
 &kp A
-```
-
-## Consumer Key Press
-
-The "consumer key press" behavior allows you to send "consumer" usage page keycodes on press/release.
-These are mostly used for media and power related keycodes, such as sending "Pause", "Scan Track Next",
-"Scan Track Previous", etc.
-
-There are a subset of the full consumer usage IDs found in the `keys.h` include, prefixed with `C_`, e.g. `C_PREV`.
-
-### Behavior Binding
-
-- Reference: `&cp`
-- Parameter: The keycode usage ID from the consumer usage page, e.g. `C_PREV` or `C_EJECT`
-
-Example:
-
-```
-&cp C_PREV
 ```
