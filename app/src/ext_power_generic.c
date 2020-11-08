@@ -150,6 +150,6 @@ static const struct ext_power_api api = {.enable = ext_power_generic_enable,
                                          .get = ext_power_generic_get};
 
 DEVICE_AND_API_INIT(ext_power_generic, DT_INST_LABEL(0), ext_power_generic_init, &data, &config,
-                    APPLICATION, CONFIG_KERNEL_INIT_PRIORITY_DEFAULT, &api);
+                    APPLICATION, CONFIG_APPLICATION_INIT_PRIORITY, &api);
 
 #endif /* DT_HAS_COMPAT_STATUS_OKAY(DT_DRV_COMPAT) */
