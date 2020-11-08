@@ -8,6 +8,8 @@
 
 #include <device.h>
 #include <init.h>
+#include <kernel.h>
+#include <settings/settings.h>
 #include <drivers/gpio.h>
 #include <drivers/ext_power.h>
 
@@ -27,6 +29,25 @@ struct ext_power_generic_data {
     bool status;
 };
 
+bool ext_power_generic_state;
+
+#if IS_ENABLED(CONFIG_SETTINGS)
+static void ext_power_save_state_work() {
+    settings_save_one("ext_power/state", &ext_power_generic_state, sizeof(ext_power_generic_state));
+}
+
+static struct k_delayed_work ext_power_save_work;
+#endif
+
+int ext_power_save_state() {
+#if IS_ENABLED(CONFIG_SETTINGS)
+    k_delayed_work_cancel(&ext_power_save_work);
+    return k_delayed_work_submit(&ext_power_save_work, K_MINUTES(1));
+#else
+    return 0;
+#endif
+}
+
 static int ext_power_generic_enable(struct device *dev) {
     struct ext_power_generic_data *data = dev->driver_data;
     const struct ext_power_generic_config *config = dev->config_info;
@@ -36,7 +57,7 @@ static int ext_power_generic_enable(struct device *dev) {
         return -EIO;
     }
     data->status = true;
-    return 0;
+    return ext_power_save_state();
 }
 
 static int ext_power_generic_disable(struct device *dev) {
@@ -48,13 +69,48 @@ static int ext_power_generic_disable(struct device *dev) {
         return -EIO;
     }
     data->status = false;
-    return 0;
+    return ext_power_save_state();
 }
 
 static int ext_power_generic_get(struct device *dev) {
     struct ext_power_generic_data *data = dev->driver_data;
     return data->status;
 }
+
+#if IS_ENABLED(CONFIG_SETTINGS)
+static int ext_power_settings_set(const char *name, size_t len, settings_read_cb read_cb, void *cb_arg) {
+    const char *next;
+    int rc;
+
+    if (settings_name_steq(name, "state", &next) && !next) {
+        if (len != sizeof(ext_power_generic_state)) {
+            return -EINVAL;
+        }
+
+        rc = read_cb(cb_arg, &ext_power_generic_state, sizeof(ext_power_generic_state));
+        if (rc >= 0) {
+            struct device *ext_power = device_get_binding(DT_INST_LABEL(0));
+
+            if (ext_power == NULL) {
+                LOG_ERR("Unable to retrieve ext_power device: %s", DT_INST_LABEL(0));
+                return -EIO;
+            }
+
+            if (ext_power_generic_state) {
+                ext_power_generic_enable(ext_power);
+            } else {
+                ext_power_generic_disable(ext_power);
+            }
+            
+            return 0;
+        }
+        return rc;
+    }
+    return -ENOENT;
+}
+
+struct settings_handler ext_power_conf = {.name = "ext_power", .h_set = ext_power_settings_set};
+#endif
 
 static int ext_power_generic_init(struct device *dev) {
     struct ext_power_generic_data *data = dev->driver_data;
@@ -70,6 +126,11 @@ static int ext_power_generic_init(struct device *dev) {
         LOG_ERR("Failed to configure ext-power control pin");
         return -EIO;
     }
+
+#if IS_ENABLED(CONFIG_SETTINGS)
+    settings_register(&ext_power_conf);
+    k_delayed_work_init(&ext_power_save_work, ext_power_save_state_work);
+#endif
 
     return 0;
 }
