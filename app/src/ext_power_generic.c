@@ -57,6 +57,7 @@ static int ext_power_generic_enable(struct device *dev) {
         return -EIO;
     }
     data->status = true;
+    ext_power_generic_state = true;
     return ext_power_save_state();
 }
 
@@ -69,6 +70,7 @@ static int ext_power_generic_disable(struct device *dev) {
         return -EIO;
     }
     data->status = false;
+    ext_power_generic_state = false;
     return ext_power_save_state();
 }
 
@@ -78,7 +80,8 @@ static int ext_power_generic_get(struct device *dev) {
 }
 
 #if IS_ENABLED(CONFIG_SETTINGS)
-static int ext_power_settings_set(const char *name, size_t len, settings_read_cb read_cb, void *cb_arg) {
+static int ext_power_settings_set(const char *name, size_t len, settings_read_cb read_cb,
+                                  void *cb_arg) {
     const char *next;
     int rc;
 
@@ -101,7 +104,7 @@ static int ext_power_settings_set(const char *name, size_t len, settings_read_cb
             } else {
                 ext_power_generic_disable(ext_power);
             }
-            
+
             return 0;
         }
         return rc;
