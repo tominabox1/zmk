@@ -5,6 +5,7 @@
  */
 
 #include <settings/settings.h>
+#include <init.h>
 
 #include <logging/log.h>
 
@@ -156,28 +157,100 @@ struct bt_conn *destination_connection() {
     return conn;
 }
 
-int zmk_hog_send_keyboard_report(struct zmk_hid_keyboard_report_body *report) {
-    struct bt_conn *conn = destination_connection();
-    if (conn == NULL) {
-        return -ENOTCONN;
+#define HOG_STACK_SIZE 512
+#define HOG_PRIORITY 5
+
+K_THREAD_STACK_DEFINE(hog_q_stack, HOG_STACK_SIZE);
+
+struct k_work_q hog_work_q;
+
+#define HOG_REPORT_QUEUE_SIZE 5
+
+K_MSGQ_DEFINE(zmk_hog_keyboard_msgq, sizeof(struct zmk_hid_keyboard_report_body),
+              HOG_REPORT_QUEUE_SIZE, 4);
+
+void send_keyboard_report_callback(struct k_work *work) {
+    struct zmk_hid_keyboard_report_body report;
+
+    while (k_msgq_get(&zmk_hog_keyboard_msgq, &report, K_NO_WAIT) == 0) {
+        int err;
+        struct bt_conn *conn = destination_connection();
+        if (conn == NULL) {
+            return;
+        }
+
+        struct bt_gatt_notify_params notify_params = {
+            .attr = &hog_svc.attrs[5],
+            .data = &report,
+            .len = sizeof(struct zmk_hid_keyboard_report_body),
+        };
+
+        err = bt_gatt_notify_cb(conn, &notify_params);
+        if (err) {
+            LOG_ERR("Error notifying %d", err);
+        }
+
+        bt_conn_unref(conn);
     }
+}
 
-    LOG_DBG("Sending to NULL? %s", conn == NULL ? "yes" : "no");
+K_WORK_DEFINE(hog_keyboard_work, send_keyboard_report_callback);
 
-    int err = bt_gatt_notify(conn, &hog_svc.attrs[5], report,
-                             sizeof(struct zmk_hid_keyboard_report_body));
-    bt_conn_unref(conn);
-    return err;
+int zmk_hog_send_keyboard_report(struct zmk_hid_keyboard_report_body *report) {
+    int err = k_msgq_put(&zmk_hog_keyboard_msgq, report, K_MSEC(100));
+    if (err) {
+        LOG_WRN("Failed to queue keyboard report to send (%d)", err);
+        return err;
+    }
+    k_work_submit_to_queue(&hog_work_q, &hog_keyboard_work);
+
+    return 0;
 };
+
+K_MSGQ_DEFINE(zmk_hog_consumer_msgq, sizeof(struct zmk_hid_consumer_report_body),
+              HOG_REPORT_QUEUE_SIZE, 4);
+
+void send_consumer_report_callback(struct k_work *work) {
+    struct zmk_hid_consumer_report_body report;
+
+    while (k_msgq_get(&zmk_hog_consumer_msgq, &report, K_NO_WAIT) == 0) {
+        struct bt_conn *conn = destination_connection();
+        if (conn == NULL) {
+            return;
+        }
+
+        struct bt_gatt_notify_params notify_params = {
+            .attr = &hog_svc.attrs[10],
+            .data = &report,
+            .len = sizeof(struct zmk_hid_consumer_report_body),
+        };
+
+        int err = bt_gatt_notify_cb(conn, &notify_params);
+        if (err) {
+            LOG_DBG("Error notifying %d", err);
+        }
+
+        bt_conn_unref(conn);
+    }
+};
+
+K_WORK_DEFINE(hog_consumer_work, send_consumer_report_callback);
 
 int zmk_hog_send_consumer_report(struct zmk_hid_consumer_report_body *report) {
-    struct bt_conn *conn = destination_connection();
-    if (conn == NULL) {
-        return -ENOTCONN;
+    int err = k_msgq_put(&zmk_hog_consumer_msgq, report, K_MSEC(100));
+    if (err) {
+        LOG_WRN("Failed to queue consumer report to send (%d)", err);
+        return err;
     }
+    k_work_submit_to_queue(&hog_work_q, &hog_consumer_work);
 
-    int err = bt_gatt_notify(conn, &hog_svc.attrs[10], report,
-                             sizeof(struct zmk_hid_consumer_report_body));
-    bt_conn_unref(conn);
-    return err;
+    return 0;
 };
+
+int zmk_hog_init(const struct device *_arg) {
+    k_work_q_start(&hog_work_q, hog_q_stack, K_THREAD_STACK_SIZEOF(hog_q_stack), HOG_PRIORITY);
+
+    return 0;
+}
+
+SYS_INIT(zmk_hog_init, APPLICATION, CONFIG_APPLICATION_INIT_PRIORITY);
