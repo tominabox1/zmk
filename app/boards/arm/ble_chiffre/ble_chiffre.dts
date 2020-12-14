@@ -8,8 +8,8 @@
 #include <nordic/nrf52840_qiaa.dtsi>
 
 / {
-	model = "nice!nano";
-	compatible = "nice,nano";
+	model = "BLe Chiffre";
+	compatible = "ble,chiffre";
 
 	chosen {
 		zephyr,code-partition = &code_partition;
