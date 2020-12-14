@@ -4,7 +4,7 @@
 if BOARD_BLE_CHIFFRE
 
 config ZMK_KEYBOARD_NAME
-	default "BLE Chiffre"
+	default "BLe Chiffre"
 
 if USB
 
@@ -26,6 +26,6 @@ config ZMK_USB
 	default y
 
 config ZMK_BATTERY_VOLTAGE_DIVIDER
-	default y
+	default n
 
 endif # BOARD_BLE_CHIFFRE
