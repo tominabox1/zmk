@@ -232,7 +232,7 @@ static void release_pressed_keys() {
         }
         struct position_state_changed *captured_event = pressed_keys[i];
         pressed_keys[i] = NULL;
-        ZMK_EVENT_RAISE_AT(captured_event, behavior_combo);
+        ZMK_EVENT_RAISE(captured_event);
     }
 }
 
