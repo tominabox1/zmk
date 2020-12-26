@@ -26,6 +26,10 @@ static zmk_mod_flags explicit_modifiers = 0;
         LOG_DBG("Modifiers set to 0x%02X", keyboard_report.body.modifiers);                        \
     }
 
+zmk_mod_flags zmk_hid_get_mods() { return explicit_modifiers; }
+
+zmk_mod_flags zmk_hid_get_current_mods() { return keyboard_report.body.modifiers; }
+
 int zmk_hid_register_mod(zmk_mod modifier) {
     explicit_modifier_counts[modifier]++;
     LOG_DBG("Modifier %d count %d", modifier, explicit_modifier_counts[modifier]);
