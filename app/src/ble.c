@@ -32,8 +32,8 @@ LOG_MODULE_DECLARE(zmk, CONFIG_ZMK_LOG_LEVEL);
 #include <zmk/ble.h>
 #include <zmk/keys.h>
 #include <zmk/split/bluetooth/uuid.h>
-#include <zmk/event-manager.h>
-#include <zmk/events/ble-active-profile-changed.h>
+#include <zmk/event_manager.h>
+#include <zmk/events/ble_active_profile_changed.h>
 
 static struct bt_conn *auth_passkey_entry_conn;
 static uint8_t passkey_entries[6] = {0, 0, 0, 0, 0, 0};
@@ -63,19 +63,24 @@ static uint8_t active_profile;
 #define DEVICE_NAME CONFIG_BT_DEVICE_NAME
 #define DEVICE_NAME_LEN (sizeof(DEVICE_NAME) - 1)
 
+#define IS_HOST_PERIPHERAL                                                                         \
+    (!IS_ENABLED(CONFIG_ZMK_SPLIT) || IS_ENABLED(CONFIG_ZMK_SPLIT_BLE_ROLE_CENTRAL))
+#define IS_SPLIT_PERIPHERAL                                                                        \
+    (IS_ENABLED(CONFIG_ZMK_SPLIT) && !IS_ENABLED(CONFIG_ZMK_SPLIT_BLE_ROLE_CENTRAL))
+
 static const struct bt_data zmk_ble_ad[] = {
-#if !IS_ENABLED(CONFIG_ZMK_SPLIT_BLE_ROLE_PERIPHERAL)
+#if IS_HOST_PERIPHERAL
     BT_DATA(BT_DATA_NAME_COMPLETE, DEVICE_NAME, DEVICE_NAME_LEN),
     BT_DATA_BYTES(BT_DATA_GAP_APPEARANCE, 0xC1, 0x03),
 #endif
     BT_DATA_BYTES(BT_DATA_FLAGS, (BT_LE_AD_GENERAL | BT_LE_AD_NO_BREDR)),
     BT_DATA_BYTES(BT_DATA_UUID16_SOME,
-#if !IS_ENABLED(CONFIG_ZMK_SPLIT_BLE_ROLE_PERIPHERAL)
+#if IS_HOST_PERIPHERAL
                   0x12, 0x18, /* HID Service */
 #endif
                   0x0f, 0x18 /* Battery Service */
                   ),
-#if IS_ENABLED(CONFIG_ZMK_SPLIT_BLE_ROLE_PERIPHERAL)
+#if IS_SPLIT_PERIPHERAL
     BT_DATA_BYTES(BT_DATA_UUID128_ALL, ZMK_SPLIT_BT_SERVICE_UUID)
 #endif
 };
@@ -228,6 +233,23 @@ int zmk_ble_clear_bonds() {
 
 int zmk_ble_active_profile_index() { return active_profile; }
 
+#if IS_ENABLED(CONFIG_SETTINGS)
+static void ble_save_profile_work(struct k_work *work) {
+    settings_save_one("ble/active_profile", &active_profile, sizeof(active_profile));
+}
+
+static struct k_delayed_work ble_save_work;
+#endif
+
+static int ble_save_profile() {
+#if IS_ENABLED(CONFIG_SETTINGS)
+    k_delayed_work_cancel(&ble_save_work);
+    return k_delayed_work_submit(&ble_save_work, K_MSEC(CONFIG_ZMK_SETTINGS_SAVE_DEBOUNCE));
+#else
+    return 0;
+#endif
+}
+
 int zmk_ble_prof_select(uint8_t index) {
     LOG_DBG("profile %d", index);
     if (active_profile == index) {
@@ -235,7 +257,7 @@ int zmk_ble_prof_select(uint8_t index) {
     }
 
     active_profile = index;
-    settings_save_one("ble/active_profile", &active_profile, sizeof(active_profile));
+    ble_save_profile();
 
     update_advertising();
 
@@ -356,7 +378,7 @@ static void connected(struct bt_conn *conn, uint8_t err) {
 
     bt_conn_le_param_update(conn, BT_LE_CONN_PARAM(0x0006, 0x000c, 30, 400));
 
-#if IS_ENABLED(CONFIG_ZMK_SPLIT_BLE_ROLE_PERIPHERAL)
+#if IS_SPLIT_PERIPHERAL
     bt_conn_le_phy_update(conn, BT_CONN_LE_PHY_PARAM_2M);
 #endif
 
@@ -445,7 +467,7 @@ static void auth_cancel(struct bt_conn *conn) {
     LOG_DBG("Pairing cancelled: %s", log_strdup(addr));
 }
 
-#if !IS_ENABLED(CONFIG_ZMK_SPLIT_BLE_ROLE_PERIPHERAL)
+#if IS_HOST_PERIPHERAL
 static enum bt_security_err auth_pairing_accept(struct bt_conn *conn,
                                                 const struct bt_conn_pairing_feat *const feat) {
     struct bt_conn_info info;
@@ -459,7 +481,7 @@ static enum bt_security_err auth_pairing_accept(struct bt_conn *conn,
 
     return BT_SECURITY_ERR_SUCCESS;
 };
-#endif /* !IS_ENABLED(CONFIG_ZMK_SPLIT_BLE_ROLE_PERIPHERAL) */
+#endif /* IS_HOST_PERIPHERAL */
 
 static void auth_pairing_complete(struct bt_conn *conn, bool bonded) {
     struct bt_conn_info info;
@@ -474,22 +496,22 @@ static void auth_pairing_complete(struct bt_conn *conn, bool bonded) {
         return;
     }
 
-#if !IS_ENABLED(CONFIG_ZMK_SPLIT_BLE_ROLE_PERIPHERAL)
+#if IS_HOST_PERIPHERAL
     if (!zmk_ble_active_profile_is_open()) {
         LOG_ERR("Pairing completed but current profile is not open: %s", log_strdup(addr));
         bt_unpair(BT_ID_DEFAULT, dst);
         return;
     }
-#endif /* !IS_ENABLED(CONFIG_ZMK_SPLIT_BLE_ROLE_PERIPHERAL) */
+#endif /* IS_HOST_PERIPHERAL */
 
     set_profile_address(active_profile, dst);
     update_advertising();
 };
 
 static struct bt_conn_auth_cb zmk_ble_auth_cb_display = {
-#if !IS_ENABLED(CONFIG_ZMK_SPLIT_BLE_ROLE_PERIPHERAL)
+#if IS_HOST_PERIPHERAL
     .pairing_accept = auth_pairing_accept,
-#endif /* !IS_ENABLED(CONFIG_ZMK_SPLIT_BLE_ROLE_PERIPHERAL) */
+#endif /* IS_HOST_PERIPHERAL */
     .pairing_complete = auth_pairing_complete,
 // .passkey_display = auth_passkey_display,
 
@@ -526,7 +548,10 @@ static int zmk_ble_init(const struct device *_arg) {
         return err;
     }
 
-    settings_load();
+    k_delayed_work_init(&ble_save_work, ble_save_profile_work);
+
+    settings_load_subtree("ble");
+    settings_load_subtree("bt");
 
 #endif
 
@@ -571,7 +596,7 @@ int zmk_ble_unpair_all() {
 };
 
 bool zmk_ble_handle_key_user(struct zmk_key_event *key_event) {
-    zmk_key key = key_event->key;
+    zmk_key_t key = key_event->key;
 
     if (!auth_passkey_entry_conn) {
         return true;

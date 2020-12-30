@@ -18,8 +18,6 @@ jobs:
     container:
       image: zmkfirmware/zmk-build-arm:2.4
     steps:
-      # To use this repository's private action,
-      # you must check out the repository
       - name: Checkout
         uses: actions/checkout@v2
       - name: Cache west modules
@@ -39,17 +37,15 @@ jobs:
             4-${{ runner.os }}-
         timeout-minutes: 2
         continue-on-error: true
-      - name: West init
+      - name: Initialize workspace (west init)
         run: west init -l app
-      - name: West update
+      - name: Update modules (west update)
         run: west update
-      - name: West config Zephyr base
-        run: west config --global zephyr.base-prefer configfile
-      - name: West Zephyr export
+      - name: Export Zephyr CMake package (west zephyr-export)
         run: west zephyr-export
       - name: Test all
         run: west test
-      - name: Archive build
+      - name: Archive artifacts
         if: ${{ always() }}
         uses: actions/upload-artifact@v2
         with:
