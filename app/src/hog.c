@@ -156,28 +156,94 @@ struct bt_conn *destination_connection() {
     return conn;
 }
 
+static K_SEM_DEFINE(hog_keyboard_sem, 1, 1);
+
+static bool resend_keyboard_report = false;
+void keyboard_report_complete_cb(struct bt_conn *conn, void *user_data);
+
 int zmk_hog_send_keyboard_report(struct zmk_hid_keyboard_report_body *report) {
+    int err;
     struct bt_conn *conn = destination_connection();
     if (conn == NULL) {
         return -ENOTCONN;
+    }
+
+    err = k_sem_take(&hog_keyboard_sem, K_NO_WAIT);
+    if (err) {
+        resend_keyboard_report = true;
+        goto release;
     }
 
     LOG_DBG("Sending to NULL? %s", conn == NULL ? "yes" : "no");
 
-    int err = bt_gatt_notify(conn, &hog_svc.attrs[5], report,
-                             sizeof(struct zmk_hid_keyboard_report_body));
+    struct bt_gatt_notify_params notify_params = {.attr = &hog_svc.attrs[5],
+                                                  .data = report,
+                                                  .len =
+                                                      sizeof(struct zmk_hid_keyboard_report_body),
+                                                  .user_data = report,
+                                                  .func = keyboard_report_complete_cb};
+
+    err = bt_gatt_notify_cb(conn, &notify_params);
+    if (err) {
+        k_sem_give(&hog_keyboard_sem);
+    }
+
+release:
     bt_conn_unref(conn);
     return err;
 };
 
+void keyboard_report_complete_cb(struct bt_conn *conn, void *user_data) {
+    k_sem_give(&hog_keyboard_sem);
+    if (resend_keyboard_report) {
+        resend_keyboard_report = false;
+        LOG_DBG("Re-sending keyboard");
+        zmk_hog_send_keyboard_report(user_data);
+    }
+}
+
+static K_SEM_DEFINE(hog_consumer_sem, 1, 1);
+
+static bool resend_consumer_report = false;
+void consumer_report_complete_cb(struct bt_conn *conn, void *user_data);
+
 int zmk_hog_send_consumer_report(struct zmk_hid_consumer_report_body *report) {
+    int err;
     struct bt_conn *conn = destination_connection();
     if (conn == NULL) {
         return -ENOTCONN;
     }
 
-    int err = bt_gatt_notify(conn, &hog_svc.attrs[10], report,
-                             sizeof(struct zmk_hid_consumer_report_body));
+    err = k_sem_take(&hog_consumer_sem, K_NO_WAIT);
+    if (err) {
+        resend_consumer_report = true;
+        goto release;
+    }
+
+    LOG_DBG("Sending to NULL? %s", conn == NULL ? "yes" : "no");
+
+    struct bt_gatt_notify_params notify_params = {.attr = &hog_svc.attrs[10],
+                                                  .data = report,
+                                                  .len =
+                                                      sizeof(struct zmk_hid_consumer_report_body),
+                                                  .user_data = report,
+                                                  .func = consumer_report_complete_cb};
+
+    err = bt_gatt_notify_cb(conn, &notify_params);
+    if (err) {
+        k_sem_give(&hog_consumer_sem);
+    }
+
+release:
     bt_conn_unref(conn);
     return err;
 };
+
+void consumer_report_complete_cb(struct bt_conn *conn, void *user_data) {
+    k_sem_give(&hog_consumer_sem);
+    if (resend_consumer_report) {
+        resend_consumer_report = false;
+        LOG_DBG("Re-sending consumed report");
+        zmk_hog_send_consumer_report(user_data);
+    }
+}
