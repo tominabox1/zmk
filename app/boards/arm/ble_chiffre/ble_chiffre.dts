@@ -6,7 +6,7 @@
 
 /dts-v1/;
 #include <nordic/nrf52840_qiaa.dtsi>
-#include <dt-bindings/zmk/matrix-transform.h>
+#include <dt-bindings/zmk/matrix_transform.h>
 
 / {
 	model = "BLe Chiffre";
@@ -67,7 +67,7 @@
 	ext-power {
 		compatible = "zmk,ext-power-generic";
 		label = "EXT_POWER";
-		control-gpios = <&gpio0 7 GPIO_ACTIVE_HIGH>;
+		control-gpios = <&gpio0 7 GPIO_ACTIVE_LOW>;
 	};
 
 	vbatt {
