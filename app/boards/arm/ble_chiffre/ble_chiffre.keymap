@@ -7,7 +7,7 @@
 #include <behaviors.dtsi>
 #include <dt-bindings/zmk/keys.h>
 #include <dt-bindings/zmk/bt.h>
-#include <dt-bindings/zmk/rgb.h>
+#include <dt-bindings/zmk/ext_power.h>
 
 #define DEFAULT 0
 #define NUM_SYM 1
@@ -172,7 +172,7 @@
             bindings = <
     &bt BT_SEL_CMD 0 &bt BT_SEL_CMD 1 &bt BT_SEL_CMD 2 &bt BT_SEL_CMD 3 &none &none &kp PG_UP &kp UP &none &kp BSPC
     &trans &trans &trans &trans &none &kp HOME &kp LEFT &kp DOWN &kp RIGHT &kp END
-    &rgb_ug RGB_TOG &rgb_ug RGB_EFF &none &none &none &kp PG_DN &none &kp GRAVE &kp BSLH &kp FSLH
+    &ext_power EP_TOG &trans &none &none &none &kp PG_DN &none &kp GRAVE &kp BSLH &kp FSLH
     &bt BT_CLR &trans &kp C_PREV &kp C_PP
             >;
         };
