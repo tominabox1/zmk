@@ -28,8 +28,6 @@ config ZMK_USB
 config ZMK_BATTERY_VOLTAGE_DIVIDER
 	default y
 
-endif # BOARD_BLE_CHIFFRE
-
 if ZMK_DISPLAY
 
 config I2C
@@ -43,25 +41,5 @@ config SSD1306_REVERSE_MODE
 
 endif # ZMK_DISPLAY
 
-if LVGL
+endif # BOARD_BLE_CHIFFRE
 
-config LVGL_HOR_RES_MAX
-	default 128
-
-config LVGL_VER_RES_MAX
-	default 32
-
-config LVGL_VDB_SIZE
-	default 64
-
-config LVGL_DPI
-	default 148
-
-config LVGL_BITS_PER_PIXEL
-	default 1
-
-choice LVGL_COLOR_DEPTH
-	default LVGL_COLOR_DEPTH_1
-endchoice
-
-endif # LVGL
