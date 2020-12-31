@@ -67,7 +67,7 @@
 	ext-power {
 		compatible = "zmk,ext-power-generic";
 		label = "EXT_POWER";
-		control-gpios = <&gpio0 7 GPIO_ACTIVE_LOW>;
+		control-gpios = <&gpio0 7 GPIO_ACTIVE_HIGH>;
 	};
 
 	vbatt {
@@ -96,19 +96,37 @@
 };
 
 &i2c0 {
-	compatible = "nordic,nrf-twi";
+	status = "okay";
+	compatible = "nordic,nrf-twim";
 	sda-pin = <21>;
 	scl-pin = <19>;
+
+	oled: ssd1306@3c {
+		compatible = "solomon,ssd1306fb";
+		reg = <0x3c>;
+		label = "DISPLAY";
+		width = <128>;
+		height = <32>;
+		segment-offset = <0>;
+		page-offset = <0>;
+		display-offset = <0>;
+		multiplex-ratio = <31>;
+		segment-remap;
+		com-invdir;
+		com-sequential;
+		prechargep = <0x22>;
+	};
+
 };
 
 &uart0 {
  	compatible = "nordic,nrf-uarte";
  	status = "okay";
  	current-speed = <115200>;
- 	tx-pin = <19>;
- 	rx-pin = <21>;
- 	rts-pin = <23>;
-	cts-pin = <25>;
+ 	tx-pin = <16>;
+ 	rx-pin = <14>;
+ 	rts-pin = <13>;
+	cts-pin = <15>;
  };
  
 &usbd {
