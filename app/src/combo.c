@@ -72,6 +72,11 @@ int64_t timeout_task_timeout_at;
 static int initialize_combo(struct combo_cfg *new_combo) {
     for (int i = 0; i < new_combo->key_position_len; i++) {
         int32_t position = new_combo->key_positions[i];
+        if (position >= ZMK_KEYMAP_LEN) {
+            LOG_ERR("Unable to initialize combo, key position %d does not exist", position);
+            return -EINVAL;
+        }
+
         struct combo_cfg *insert_combo = new_combo;
         bool set = false;
         for (int j = 0; j < CONFIG_ZMK_COMBO_MAX_COMBOS_PER_KEY; j++) {
