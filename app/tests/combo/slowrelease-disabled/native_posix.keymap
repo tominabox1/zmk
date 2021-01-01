@@ -3,10 +3,9 @@
 #include <dt-bindings/zmk/kscan-mock.h>
 
 / {
-	behaviors {
+	combos {
+		compatible = "zmk,combo";
 		combo_one {
-			compatible = "zmk,behavior-combo";
-			label = "COMBO_ONE";
 			timeout-ms = <30>;
 			key-positions = <0 1>;
 			bindings = <&kp C>;
@@ -16,7 +15,7 @@
 
 	keymap {
 		compatible = "zmk,keymap";
-		label ="Default keymap";
+		label = "Default keymap";
 
 		default_layer {
 			bindings = <

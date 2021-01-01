@@ -9,10 +9,9 @@
     expected: key pos 0 followed by combo 12
  */
 / {
-	behaviors {
+	combos {
+		compatible = "zmk,combo";
 		combo_two {
-			compatible = "zmk,behavior-combo";
-			label = "COMBO_TWO";
 			timeout-ms = <100>;
 			key-positions = <1 2>;
 			bindings = <&kp Y>;
@@ -20,8 +19,6 @@
 
 
 		combo_four {
-			compatible = "zmk,behavior-combo";
-			label = "COMBO_four";
 			timeout-ms = <100>;
 			key-positions = <0 1 2 3>;
 			bindings = <&kp W>;

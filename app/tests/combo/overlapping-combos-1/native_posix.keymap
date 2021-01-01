@@ -9,18 +9,15 @@
     expected outcome: AB after 100ms
 */
 / {
-	behaviors {
+	combos {
+		compatible = "zmk,combo";
 		combo_two {
-			compatible = "zmk,behavior-combo";
-			label = "COMBO_TWO";
 			timeout-ms = <50>;
 			key-positions = <0 1>;
 			bindings = <&kp Y>;
 		};
 
 		combo_three {
-			compatible = "zmk,behavior-combo";
-			label = "COMBO_THREE";
 			timeout-ms = <100>;
 			key-positions = <0 1 2>;
 			bindings = <&kp X>;

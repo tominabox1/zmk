@@ -8,10 +8,9 @@
 
 /* this test checks if hold-taps can be part of a combo */
 / {
-	behaviors {
+	combos {
+		compatible = "zmk,combo";
 		combo_two {
-			compatible = "zmk,behavior-combo";
-			label = "COMBO_TWO";
 			timeout-ms = <100>;
 			key-positions = <0 1>;
 			bindings = <&kp Y>;

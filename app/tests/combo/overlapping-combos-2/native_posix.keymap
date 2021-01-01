@@ -9,19 +9,15 @@
     expected: combo 01 after 100ms, immediately followed by key 2.
  */
 / {
-	behaviors {
+	combos {
+		compatible = "zmk,combo";
 		combo_two {
-			compatible = "zmk,behavior-combo";
-			label = "COMBO_TWO";
 			timeout-ms = <100>;
 			key-positions = <0 1>;
 			bindings = <&kp Y>;
 		};
 
-
 		combo_four {
-			compatible = "zmk,behavior-combo";
-			label = "COMBO_four";
 			timeout-ms = <100>;
 			key-positions = <0 1 2 3>;
 			bindings = <&kp W>;
