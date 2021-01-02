@@ -12,10 +12,10 @@ and combos is wrong. Hold-taps need to process key position events
 first so the decision to hold or tap can be made.
 */
 / {
-	behaviors {
+	combos {
+		compatible = "zmk,combo";
+
 		combo_two {
-			compatible = "zmk,behavior-combo";
-			label = "COMBO_TWO";
 			timeout-ms = <100>;
 			key-positions = <1 2>;
 			bindings = <&kp Y>;

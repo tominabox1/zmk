@@ -3,18 +3,15 @@
 #include <dt-bindings/zmk/kscan-mock.h>
 
 / {
-	behaviors {
+	combos {
+		compatible = "zmk,combo";
 		combo_one {
-			compatible = "zmk,behavior-combo";
-			label = "COMBO_ONE";
 			timeout-ms = <30>;
 			key-positions = <0 1>;
 			bindings = <&kp C>;
 		};
 
 		combo_two {
-			compatible = "zmk,behavior-combo";
-			label = "COMBO_TWO";
 			timeout-ms = <30>;
 			key-positions = <2 3>;
 			bindings = <&kp D>;

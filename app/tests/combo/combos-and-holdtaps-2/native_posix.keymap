@@ -10,17 +10,14 @@
  * events which were released from combos.
  */
 / {
-	behaviors {
+	combos {
+		compatible = "zmk,combo";
 		combo_one {
-			compatible = "zmk,behavior-combo";
-			label = "COMBO_ONE";
 			timeout-ms = <100>;
 			key-positions = <0 2>;
 			bindings = <&kp Y>;
 		};
 		combo_two {
-			compatible = "zmk,behavior-combo";
-			label = "COMBO_TWO";
 			timeout-ms = <100>;
 			key-positions = <1 3>;
 			bindings = <&kp Z>;
