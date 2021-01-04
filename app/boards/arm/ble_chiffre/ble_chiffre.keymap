@@ -14,72 +14,69 @@
 #define NAV     2
 
 / {
-	behaviors
-	{
-	// Hold Taps
-	rst:reset
+	behaviors {
+		rst: boot_reset 
 		{
 			compatible = "zmk,behavior-hold-tap";
 			label = "Bootloader Tap - Reset Hold";
-			#binding-cells = < 2>;
+			#binding-cells = <2>;
 			tapping_term_ms = <200>;
-			flavor = "balanced";
+            flavor = "balanced";
 			bindings = <&reset>, <&bootloader>;
-		};
+        };
 
-	bh:layer_taps
+        bh: layer_taps 
 		{
 			compatible = "zmk,behavior-hold-tap";
 			label = "Layer-Tap";
-			#binding-cells = < 2>;
+			#binding-cells = <2>;
 			tapping_term_ms = <215>;
-			flavor = "tap-preferred";
+            flavor = "tap-preferred";
 			bindings = <&mo>, <&kp>;
-		};
+        };
 
-	hm:homerow_mods
+        hm: homerow_mods0 
 		{
 			compatible = "zmk,behavior-hold-tap";
 			label = "homerow mods";
-			#binding-cells = < 2>;
+			#binding-cells = <2>;
 			tapping_term_ms = <230>;
-			flavor = "tap-preferred";
+            flavor = "tap-preferred";
 			bindings = <&kp>, <&kp>;
-		};
-
-	hm1:homerow_mods1
+        };
+        
+        hm1: homerow_mods1 
 		{
 			compatible = "zmk,behavior-hold-tap";
 			label = "homerow mods";
-			#binding-cells = < 2>;
+			#binding-cells = <2>;
 			tapping_term_ms = <205>;
-			flavor = "tap-preferred";
+            flavor = "tap-preferred";
 			bindings = <&kp>, <&kp>;
-		};
+        };
 
-	hm2:homerow_mods2
+        hm2: homerow_mods2 
 		{
 			compatible = "zmk,behavior-hold-tap";
 			label = "homerow mods 2";
-			#binding-cells = < 2>;
+			#binding-cells = <2>;
 			tapping_term_ms = <250>;
-			flavor = "tap-preferred";
+            flavor = "tap-preferred";
 			bindings = <&kp>, <&kp>;
-		};
-	com_col:
-		behavior_tap_hold10
+        };
+
+        com_col: comma_semicolon
 		{
-			compatible = "zmk,behavior-hold-tap";
-			label = "Tap comma_hold colon";
-			#binding-cells = < 2>;
+		 	compatible = "zmk,behavior-hold-tap";
+	     	label = "Tap comma_hold colon";
+			#binding-cells = <2>;
 			tapping_term_ms = <150>;
-			flavor = "balanced";
-			bindings = <&kp>, <&kp>;
-		};
-	
-	};
+            flavor = "balanced";
+		 	bindings = <&kp>, <&kp>;
+	    };
+   	 };
 };
-// Combos
+
 / {
 	combos {
 		compatible = "zmk,combo";
@@ -88,32 +85,38 @@
 			key-positions = <8 9>;
 			bindings = <&kp BSPC>;
 		};
-		combo_gesc {
+		combo_gesc 
+		{
 			timeout-ms = <30>;
 			key-positions = <0 1>;
 			bindings = <&com_col GRAVE ESC>;
 		};
-		combo_tab {
+		combo_tab 
+		{
 			timeout-ms = <35>;
 			key-positions = <11 12>;
 			bindings = <&kp TAB>;
 		};
-		combo_mnxt {
+		combo_mnxt 
+		{
 			timeout-ms = <30>;
 			key-positions = <28 29>;
 			bindings = <&kp C_NEXT>;
 		};
-		combo_mprev {
+		combo_mprev 
+		{
 			timeout-ms = <30>;
 			key-positions = <27 28>;
 			bindings = <&kp C_PREV>;	
 		};
-		combo_mpp {
-			timeout-ms = <30>;o
+		combo_mpp 
+		{
+			timeout-ms = <30>;
 			key-positions = <27 29>;
 			bindings = <&kp C_PP>;
 		};
-		combo_del {
+		combo_del 
+		{
 			timeout-ms = <40>;
 			key-positions = <7 8 9>;
 			bindings = <&kp DEL>;
