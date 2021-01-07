@@ -79,7 +79,7 @@
 
 / {
 	combos {
-		compatible = "zmk,combo";
+		compatible = "zmk,combos";
 		combo_backspce {
 			timeout-ms = <40>;
 			key-positions = <8 9>;

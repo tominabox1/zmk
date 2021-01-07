@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  */
 
-#define DT_DRV_COMPAT zmk_combo
+#define DT_DRV_COMPAT zmk_combos
 
 #include <device.h>
 #include <drivers/behavior.h>

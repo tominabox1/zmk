@@ -14,7 +14,7 @@ Combos are specified like this:
 ```
 / {
 	combos {
-		compatible = "zmk,combo";
+		compatible = "zmk,combos";
 		combo_esc {
 			timeout-ms = <50>;
 			key-positions = <0 1>;
@@ -25,11 +25,11 @@ Combos are specified like this:
 ```
 
 - The name of the combo doesn't really matter, but convention is to start the node name with `combo_`.
-- The `compatible` property should always be `"zmk,combo"` for combos.
+- The `compatible` property should always be `"zmk,combos"` for combos.
 - `timeout-ms` is the number of milliseconds that all keys of the combo must be pressed.
 - `key-positions` is an array of key positions. See the info section below about how to figure out the positions on your board.
 - `bindings` is the behavior that is activated when the behavior is pressed.
-- (advanced) you can specify `slow-release` if you want the combo binding to be released when all key-positions are released. The default is to release the combo as soon as any of the keys is released.
+- (advanced) you can specify `slow-release` if you want the combo binding to be released when all key-positions are released. The default is to release the combo as soon as any of the keys in the combo is released.
 
 :::info
 

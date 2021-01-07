@@ -1,29 +1,29 @@
 # Copyright (c) 2020 The ZMK Contributors
 # SPDX-License-Identifier: MIT
 
-if SHIELD_BFO9000_LEFT
+if SHIELD_HELIX_LEFT
 
 config ZMK_KEYBOARD_NAME
-	default "BFO9000 Left"
+    default "Helix Left"
 
 config ZMK_SPLIT_BLE_ROLE_CENTRAL
-	default y
+    default y
 
 endif
 
-if SHIELD_BFO9000_RIGHT
+if SHIELD_HELIX_RIGHT
 
 config ZMK_KEYBOARD_NAME
-	default "BFO9000 Right"
+    default "Helix Right"
 
 config USB
-	default y
+    default y
 
 endif
 
-if SHIELD_BFO9000_LEFT || SHIELD_BFO9000_RIGHT
+if SHIELD_HELIX_LEFT || SHIELD_HELIX_RIGHT
 
 config ZMK_SPLIT
-	default y
+    default y
 
 endif
