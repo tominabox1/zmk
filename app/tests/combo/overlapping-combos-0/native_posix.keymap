@@ -15,7 +15,7 @@
 
 / {
 	combos {
-		compatible = "zmk,combo";
+		compatible = "zmk,combos";
 		combo_one {
 			timeout-ms = <TIMEOUT>;
 			key-positions = <0 1 2>;
